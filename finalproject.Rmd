@@ -26,12 +26,45 @@ CODGameModes <- read.csv("./CODGameModes.csv")
 
 ```
 
-## Including Plots
+## Task 1: Data Cleaning and Data Visualization – Complete without Generative AI (Thaddeus + Sammit-ish)
 
-You can also embed plots, for example:
+> *Relevant Information:* (Complete without using Generative AI) Prior to each online match, players in the game lobby are presented with two options for the battlefield of the upcoming game (`Map1` and `Map2`). The players have the option to vote and the resulting vote is recorded in the `MapVote` column. The winning map is listed in the `Choice` column. In the event of a tie vote, the map listed in `Map1` is chosen. (Games for which the player entered the lobby after the vote has taken place have no information in `Map1` and `Map2` but have the winning map presented in `Choice`.)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+**Research Question:** Which maps are the most likely to win the map vote when they are an option?
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+*Notes:* To answer this question...
+
+1.  Write a paragraph (or more) discussing how you plan to answer this question (Be sure to address the data quality issues mentioned below and discuss how you will do the calculations).
+2.  Then, write code and answer the question. (If I must answer questions about your approach/decision making process by reading your code rather than your discussion, you will lose points.)
+3.  As part of your solution, you should calculate the proportion/probability that a map wins the vote given that it was a candidate.
+
+*Note:* To do this, you will have to calculate the number times that each map was listed as a candidate (Map1 or Map2) and earned more votes than the other candidate.
+
+-   As part of this, you should consider whether a given map won the vote by getting more votes than the other option or if it was selected since it was `Map1` and the vote was a tie.
+-   You should also include a visualization of the results.
+-   There might be some data quality issues (such as misspelled map names and extra (trailing) blanks in some entries) to solve for this problem.
+-   You can find the proper names/spellings in the CODMaps.csv file.
+-   **Warning:** To full receive full credit, you must write code to solve these issues rather than editing the `.csv` files
+
+## Task 2: Data Cleaning and Data Visualization – Complete using Generative AI (Sammit + Thaddeus-ish)
+
+**Question:** Repeat Task 1 using a generative AI of your choice.
+
+1.  To answer this question, mention the tool (including version number if appropriate) you have selected.
+2.  Then, discuss the prompt(s) you have used and provide the solution produced by the generative AI.
+
+> *Note:* While it is fine to paste the question into the generative AI as your first prompt, you should also use additional follow-up prompts if it is beneficial to do so. - Be sure to discuss all prompts used in your report.
+
+3.  Then, implement the generative AI solution.
+4.  Finally, and most importantly, you should compare your solution from Task 1 to the generative AI solution.
+
+> *Note 2:*
+>
+> -   Discuss similarities/differences, strengths/weaknesses, etc., and provide an overall assessment of which solution is better.
+> -   The discussion should consider the correctness of the answers and should be substantial.
+> -   Demonstrate that you have given the comparison considerable thought by making at least 3 substantial points as part of your comparison. - Each point should take the form of a well-written paragraph.
+
+## Task 3: Inference (Sammit)
+
+## Task 4 (Sammit)
+
