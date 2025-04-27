@@ -16,6 +16,14 @@ library(glmnet)
 library(rpart)
 library(rattle) # for the fancyRpartPlot()
 library(tidyverse)
+library(readxl)
+
+CODMaps <- read.csv("./CODMaps.csv")
+CODGames_p2_380 <- read.csv("./CODGames_p2_380.csv")
+CODGames_p1_380 <- read.csv("./CODGames_p1_380.csv")
+CODGameModes <- read.csv("./CODGameModes.csv")
+
+
 ```
 
 ## Including Plots
