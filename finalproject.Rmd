@@ -22,8 +22,6 @@ CODMaps <- read.csv("./CODMaps.csv")
 CODGames_p2_380 <- read.csv("./CODGames_p2_380.csv")
 CODGames_p1_380 <- read.csv("./CODGames_p1_380.csv")
 CODGameModes <- read.csv("./CODGameModes.csv")
-
-
 ```
 
 ## Task 1: Data Cleaning and Data Visualization – Complete without Generative AI (Thaddeus + Sammit-ish)
@@ -66,5 +64,37 @@ CODGameModes <- read.csv("./CODGameModes.csv")
 
 ## Task 3: Inference (Sammit)
 
-## Task 4 (Sammit)
+*Relevant Information:* There are a variety games types (GameType variable) within this dataset.
 
+-   The difference between the game types is that players have different objectives for the game.
+-   For instance, in the game type “Hardpoint”, teams earn points by capturing and defending a location. - In “TDM” teams earn points by eliminating enemy opponents. As these game types have different objectives and may last for different amounts of time, the game type might affect the TotalXP earned.
+
+**Research Question:** How does the game type affect TotalXP after accounting for the Score?
+
+*Notes:* Score refers to the player’s score, not the “score” of the match (i.e., not the Result column).
+
+-   This answer requires some data wrangling that may require knowledge that we have not covered. (Again, part of the skillset you are working to develop is learning how to answer questions you have not seen previously.)
+-   In particular, there is no distinction between HC – TDM and TDM, no difference between HC – Hardpoint and Hardpoint, and so on for the other game types.
+
+**Process of Answering:**
+
+1.  Write code to clean the values in the GameType column to reflect this information.
+2.  Then, perform an exploratory data analysis by create appropriate visualizations/summary statistics that explore the distribution of the variables and show the relationship between TotalXP, Score, and GameType. (You decide on the type/number of visualizations, but the analysis should be complete.)
+3.  Finally, build an appropriate model for TotalXP based on Score and GameType. You should use the model to then answer the research question.
+
+## Task 4: Prediction (Jason)
+
+> Relevant Information: In this task, your goal is to compare a variety of classification methods. In particular, you should write your own research question that can be answered by comparing the effectiveness of various classification methodologies. To demonstrate your understanding of these methods, you should implement two classification methods from class, one of which must be random forest, and a third method that we will not cover in class. (The purpose of the using a method we did not cover is I want you to practice learning about a method and its implementation on your own. Basically, find a tutorial that explains the method and how to implement it.) You will then have to compare the results and decide which method was the most effective.
+
+**Research Question:** Write your own question and be sure that the question and answer are clearly written in your report.
+
+*Notes:* Since you will be using random forest, do not use a decision/classification tree as one of your other methods.
+
+-   For this problem, you should provide a brief description of the methods that you will use. (A description is more than listing the name of the procedure. You should describe how the procedure works.)
+-   You will implement and compare the effectiveness of these methods. As part of this process, you will have to make a number of decisions such as whether you will do any data wrangling.
+-   *EX:* Maybe you remove partial matches, maybe you create new variables, etc.), which methods will you use, how will you fairly compare the results between methods, which method is best etc. **All of these decisions should be included in your report.**
+-   **Warning:** If I have to learn about your decisions/analysis by reading your code, you will lose points.
+
+*NOTE1:* You will make your life easier if you pick a response with a small number of levels.
+
+*NOTE2:* As you are picking a method that we did not cover, one way to find techniques is by looking at the textbook that we have been covering: An Introduction to Statistical Learning with Applications in R by Gareth James et al. You can find a pdf of the textbook on the author’s site: <https://www.statlearning.com/>.

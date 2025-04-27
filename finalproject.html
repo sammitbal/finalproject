@@ -480,9 +480,86 @@ Each point should take the form of a well-written paragraph.</li>
 </div>
 <div id="task-3-inference-sammit" class="section level2">
 <h2>Task 3: Inference (Sammit)</h2>
+<p><em>Relevant Information:</em> There are a variety games types
+(GameType variable) within this dataset.</p>
+<ul>
+<li>The difference between the game types is that players have different
+objectives for the game.</li>
+<li>For instance, in the game type “Hardpoint”, teams earn points by
+capturing and defending a location. - In “TDM” teams earn points by
+eliminating enemy opponents. As these game types have different
+objectives and may last for different amounts of time, the game type
+might affect the TotalXP earned.</li>
+</ul>
+<p><strong>Research Question:</strong> How does the game type affect
+TotalXP after accounting for the Score?</p>
+<p><em>Notes:</em> Score refers to the player’s score, not the “score”
+of the match (i.e., not the Result column).</p>
+<ul>
+<li>This answer requires some data wrangling that may require knowledge
+that we have not covered. (Again, part of the skillset you are working
+to develop is learning how to answer questions you have not seen
+previously.)</li>
+<li>In particular, there is no distinction between HC – TDM and TDM, no
+difference between HC – Hardpoint and Hardpoint, and so on for the other
+game types.</li>
+</ul>
+<p><strong>Process of Answering:</strong></p>
+<ol style="list-style-type: decimal">
+<li>Write code to clean the values in the GameType column to reflect
+this information.</li>
+<li>Then, perform an exploratory data analysis by create appropriate
+visualizations/summary statistics that explore the distribution of the
+variables and show the relationship between TotalXP, Score, and
+GameType. (You decide on the type/number of visualizations, but the
+analysis should be complete.)</li>
+<li>Finally, build an appropriate model for TotalXP based on Score and
+GameType. You should use the model to then answer the research
+question.</li>
+</ol>
 </div>
-<div id="task-4-sammit" class="section level2">
-<h2>Task 4 (Sammit)</h2>
+<div id="task-4-prediction-jason" class="section level2">
+<h2>Task 4: Prediction (Jason)</h2>
+<blockquote>
+<p>Relevant Information: In this task, your goal is to compare a variety
+of classification methods. In particular, you should write your own
+research question that can be answered by comparing the effectiveness of
+various classification methodologies. To demonstrate your understanding
+of these methods, you should implement two classification methods from
+class, one of which must be random forest, and a third method that we
+will not cover in class. (The purpose of the using a method we did not
+cover is I want you to practice learning about a method and its
+implementation on your own. Basically, find a tutorial that explains the
+method and how to implement it.) You will then have to compare the
+results and decide which method was the most effective.</p>
+</blockquote>
+<p><strong>Research Question:</strong> Write your own question and be
+sure that the question and answer are clearly written in your
+report.</p>
+<p><em>Notes:</em> Since you will be using random forest, do not use a
+decision/classification tree as one of your other methods.</p>
+<ul>
+<li>For this problem, you should provide a brief description of the
+methods that you will use. (A description is more than listing the name
+of the procedure. You should describe how the procedure works.)</li>
+<li>You will implement and compare the effectiveness of these methods.
+As part of this process, you will have to make a number of decisions
+such as whether you will do any data wrangling.</li>
+<li><em>EX:</em> Maybe you remove partial matches, maybe you create new
+variables, etc.), which methods will you use, how will you fairly
+compare the results between methods, which method is best etc.
+<strong>All of these decisions should be included in your
+report.</strong></li>
+<li><strong>Warning:</strong> If I have to learn about your
+decisions/analysis by reading your code, you will lose points.</li>
+</ul>
+<p><em>NOTE1:</em> You will make your life easier if you pick a response
+with a small number of levels.</p>
+<p><em>NOTE2:</em> As you are picking a method that we did not cover,
+one way to find techniques is by looking at the textbook that we have
+been covering: An Introduction to Statistical Learning with Applications
+in R by Gareth James et al. You can find a pdf of the textbook on the
+author’s site: <a href="https://www.statlearning.com/" class="uri">https://www.statlearning.com/</a>.</p>
 </div>
 
 
