@@ -30,6 +30,10 @@ CODMaps <- read.csv("./CODMaps.csv")
 CODGames_p2_380 <- read.csv("./CODGames_p2_380.csv")
 CODGames_p1_380 <- read.csv("./CODGames_p1_380.csv")
 CODGameModes <- read.csv("./CODGameModes.csv")
+
+#combined cod dataset
+COD_combined <- bind_rows(CODGames_p1_380, CODGames_p2_380)
+
 ```
 
 ## Task 1: Data Cleaning and Data Visualization – Complete without Generative AI (Thaddeus + Sammit-ish)
@@ -89,6 +93,52 @@ CODGameModes <- read.csv("./CODGameModes.csv")
 1.  Write code to clean the values in the GameType column to reflect this information.
 2.  Then, perform an exploratory data analysis by create appropriate visualizations/summary statistics that explore the distribution of the variables and show the relationship between TotalXP, Score, and GameType. (You decide on the type/number of visualizations, but the analysis should be complete.)
 3.  Finally, build an appropriate model for TotalXP based on Score and GameType. You should use the model to then answer the research question.
+
+
+```{r}
+#Step 1 
+df_cleaned <- COD_combined %>%
+  mutate(GameType = str_replace(GameType, "^HC.*?(?=\\w)", ""))
+```
+
+
+```{r}
+# Summary statistics of Score and TotalXP by GameType
+df_cleaned %>%
+  group_by(GameType) %>%
+  summarize(
+    count = n(),
+    avg_score = mean(Score, na.rm = TRUE),
+    avg_totalxp = mean(TotalXP, na.rm = TRUE),
+    sd_totalxp = sd(TotalXP, na.rm = TRUE)
+  )
+
+```
+
+
+```{r}
+ggplot(df_cleaned, aes(x = GameType, y = TotalXP)) +
+  geom_boxplot(fill = "lightblue") +
+  theme_minimal() +
+  labs(title = "Distribution of TotalXP by GameType", x = "GameType", y = "TotalXP")
+
+ggplot(df_cleaned, aes(x = Score, y = TotalXP, color = GameType)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  labs(title = "Score vs. TotalXP by GameType", x = "Score", y = "TotalXP")
+
+
+```
+
+
+```{r}
+model <- lm(TotalXP ~ Score + GameType, data = df_cleaned)
+summary(model)
+
+```
+
+
 
 ## Task 4: Prediction (Jason)
 
