@@ -75,12 +75,15 @@ Map_select$Choice_clean <- tolower(Map_select$Choice)
 
 #found 6 misspellings 
 corrections <- c(
-  "aPocalypse" = "Apocolypse",
+  "aPocalypse" = "Apocalypse",
   "apocolypse" = "Apocalypse",
+   "Apocolypse" = "Apocalypse",
   "collaterel strike" = "Collateral Strike",
   "apocalypse" = "Apocalypse",
   "deisel" = "Diesel",
-  "drive-in" = "Drive-In"
+  "drive-in" = "Drive-In", 
+  "yamantau" = "Yamantau", 
+  "Miami Stirke" = "Miami Strike"
 )
 
 #comparing choices to misspelled words then correcting them if misspelled.
@@ -93,6 +96,32 @@ Map_select$Choice_clean <- ifelse(
 unique(as.character(Map_select$Choice_clean))
 
 ```
+
+
+
+```{r}
+Map_select <-
+  Map_select %>%
+  filter(Map1 != "Collateral Striek", Map1 != "Collaterol Strike", Map1 != "Deprogam", Map1 != "Miami Stirke", Map1 != "Riad", Map1 != "Collateral Striek", Map1 != "Ruah", Map1 != "Drive-in")
+```
+
+
+
+```{r}
+table(Map_select$Map1)
+```
+
+
+```{r}
+Map_select <-
+  Map_select %>%
+  filter(Map2 != "Miami Sstrike", Map2 != "Miami Stirke", Map2 != "yamantau", Map2 != "Amrada Strike", Map2 != "Drive-in")
+```
+
+```{r}
+table(Map_select$Map2)
+```
+
 
 
 ```{r}
