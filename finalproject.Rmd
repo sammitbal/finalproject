@@ -72,7 +72,7 @@ Map_select <- COD_combined %>%
   group_by(Map1, Map2)%>%  
   select(Choice)
   #summarise(Choice = n())
-Map_select
+
 ```
 
 
