@@ -65,12 +65,9 @@ COD_combined[COD_combined$Map1 != "", ]
 ```
 
 
-
-
 ```{r}
 Map_select <- COD_combined %>%
-  group_by(Map1, Map2)%>%  
-  select(Choice)
+  select(Map1, Map2, Choice)
   #summarise(Choice = n())
 
 ```
