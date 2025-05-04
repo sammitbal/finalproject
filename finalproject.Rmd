@@ -1,6 +1,6 @@
 ---
 title: "FinalProject"
-author: "Sammit Bal, Jason Zheng, Thaddeus"
+author: "Sammit Bal, Jason Zheng, Thaddeus Poff"
 date: "2025-04-27"
 output: html_document
 ---
@@ -20,6 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Frontmatter
 
 ```{r}
+remove(list = ls())
 library(glmnet)
 library(rpart)
 library(rattle) # for the fancyRpartPlot()
@@ -42,7 +43,7 @@ COD_combined <- bind_rows(CODGames_p1_380, CODGames_p2_380)
 
 **Research Question:** Which maps are the most likely to win the map vote when they are an option?
 
-*Notes:* To answer this question...
+*Notes:* To answer this question... 
 
 1.  Write a paragraph (or more) discussing how you plan to answer this question (Be sure to address the data quality issues mentioned below and discuss how you will do the calculations).
 2.  Then, write code and answer the question. (If I must answer questions about your approach/decision making process by reading your code rather than your discussion, you will lose points.)
@@ -55,6 +56,35 @@ COD_combined <- bind_rows(CODGames_p1_380, CODGames_p2_380)
 -   There might be some data quality issues (such as misspelled map names and extra (trailing) blanks in some entries) to solve for this problem.
 -   You can find the proper names/spellings in the CODMaps.csv file.
 -   **Warning:** To full receive full credit, you must write code to solve these issues rather than editing the `.csv` files
+
+
+
+```{r}
+COD_combined <- 
+COD_combined[COD_combined$Map1 != "", ]
+```
+
+
+
+
+```{r}
+Map_select <- COD_combined %>%
+  group_by(Map1, Map2)%>%  
+  select(Choice)
+  #summarise(Choice = n())
+Map_select
+```
+
+
+```{r}
+home_win_rate <- left_join(home_games, home_wins, by = "home_team") %>%
+  replace_na(list(home_wins = 0)) %>%
+  mutate(win_percent = (home_wins / total_home_games) * 100) %>%
+  arrange(desc(win_percent))
+head(home_win_rate, 20)
+```
+
+
 
 ## Task 2: Data Cleaning and Data Visualization – Complete using Generative AI (Sammit + Thaddeus-ish)
 
