@@ -26,6 +26,7 @@ library(rpart)
 library(rattle) # for the fancyRpartPlot()
 library(tidyverse)
 library(readxl)
+library(stringr)
 
 CODMaps <- read.csv("./CODMaps.csv")
 CODGames_p2_380 <- read.csv("./CODGames_p2_380.csv")
@@ -169,7 +170,89 @@ df <- df %>%
 ```
 
 
+To deal with the misspelled words in the dataset I asked ChatGPT:"i need to remove misspelled rows from the dataset."
 
+This was the code provided. 
+```{r}
+valid_maps <- c("Deprogram", "Collateral Strike", "Collateral", "Amerika", "Crossroads Strike", "Raid", "Rush", "Satellite", "Miami", "Cartel", "Hijacked", "Miami Strike", "Yamantau", "Drive-In", "WMD", "Standoff", "Garrison", "Nuketown '84", "Express", "Zoo", "Armada Strike", "Diesel", "Slums", "Echelon", "Apocalypse", "Checkmate", "Moscow", "The Pines", "Jungle")  # add all correct map names
+# filter(MapCandidate %in% valid_maps) (additional code from same prompt to remove misspelled maps)
+```
+
+
+
+Using chatGPT I asked: "Prior to each online match, players in the game lobby are presented with two options for the battlefield of the upcoming game (Map1 and Map2). The players have the option to vote and the resulting vote is recorded in the MapVote column. The winning map is listed in the Choice column. In the event of a tie vote, the map listed in Map1 is chosen. (Games for which the player entered the lobby after the vote has taken place have no information in Map1 and Map2 but have the winning map presented in Choice.)Which maps are the most likely to win the map vote when they are an option?As part of your solution, you should calculate the proportion/probability that a map wins the vote given that it was a candidate.
+
+*Note:* To do this, you will have to calculate the number times that each map was listed as a candidate (Map1 or Map2) and earned more votes than the other candidate.
+
+-   As part of this, you should consider whether a given map won the vote by getting more votes than the other option or if it was selected since it was Map1 and the vote was a tie.
+-   You should also include a visualization of the results.
+-   There might be some data quality issues (such as misspelled map names and extra (trailing) blanks in some entries) to solve for this problem." Which gave me this code and visualization. 
+
+
+
+
+
+```{r}
+
+# Step 1: Clean up map names (remove trailing/leading spaces, convert to lowercase if needed)
+data_clean <-COD_combined %>%
+  mutate(across(c(Map1, Map2, Choice), ~str_trim(.)))
+
+# Step 2: Create a column for which map actually won by vote (excluding ties)
+vote_results <- data_clean %>%
+  filter(!is.na(Map1) & !is.na(Map2) & !is.na(MapVote)) %>%
+  mutate(
+    vote_winner = case_when(
+      MapVote > 0 ~ Map2,
+      MapVote < 0 ~ Map1,
+      MapVote == 0 ~ Map1  # Map1 wins ties
+    )
+  )
+
+# Step 3: Reshape into long format to count wins and appearances
+long_data <- vote_results %>%
+  pivot_longer(cols = c(Map1, Map2), names_to = "MapSlot", values_to = "MapCandidate") %>%
+  mutate(win = MapCandidate == vote_winner) %>%
+    filter(MapCandidate %in% valid_maps)
+
+# Step 4: Count how many times each map was offered and how many times it won
+map_stats <- long_data %>%
+  group_by(MapCandidate) %>%
+  summarise(
+    times_offered = n(),
+    times_won = sum(win),
+    win_rate = times_won / times_offered
+  ) %>%
+  arrange(desc(win_rate)) %>%
+  
+
+
+
+print(map_stats)
+
+```
+
+
+
+
+
+
+
+
+
+
+```{r}
+ggplot(map_stats, aes(x = reorder(MapCandidate, win_rate), y = win_rate)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Map Win Rate When Offered",
+    x = "Map",
+    y = "Win Rate"
+  ) +
+  theme_minimal()
+
+```
 
 
 ## Task 3: Inference (Sammit)
