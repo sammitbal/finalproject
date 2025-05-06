@@ -308,6 +308,8 @@ ggplot(map_stats, aes(x = reorder(MapCandidate, win_rate), y = win_rate)) +
 
 
 ```{r}
+COD_combined <- bind_rows(CODGames_p1_380, CODGames_p2_380)
+
 #Step 1 
 df_cleaned <- COD_combined %>%
   mutate(GameType = str_replace(GameType, "^HC.*?(?=\\w)", ""))
@@ -320,8 +322,10 @@ df_cleaned %>%
   group_by(GameType) %>%
   summarize(
     count = n(),
-    avg_score = mean(Score, na.rm = TRUE),
-    avg_totalxp = mean(TotalXP, na.rm = TRUE),
+    mean_score = mean(Score, na.rm = TRUE),
+    median_score = median(Score, na.rm = TRUE),
+    mean_totalxp = mean(TotalXP, na.rm = TRUE),
+    median_totalxp = median(TotalXP, na.rm = TRUE),
     sd_totalxp = sd(TotalXP, na.rm = TRUE)
   )
 
@@ -330,7 +334,7 @@ df_cleaned %>%
 
 ```{r}
 ggplot(df_cleaned, aes(x = GameType, y = TotalXP)) +
-  geom_boxplot(fill = "lightblue") +
+  geom_boxplot() +
   theme_minimal() +
   labs(title = "Distribution of TotalXP by GameType", x = "GameType", y = "TotalXP")
 
@@ -345,6 +349,9 @@ ggplot(df_cleaned, aes(x = Score, y = TotalXP, color = GameType)) +
 
 
 ```{r}
+
+#How does the game type affect TotalXP after accounting for the Score?
+  
 model <- lm(TotalXP ~ Score + GameType, data = df_cleaned)
 summary(model)
 
