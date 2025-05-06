@@ -348,26 +348,22 @@ ggplot(df_cleaned, aes(x = GameType, y = TotalXP)) +
   labs(title = "Distribution of TotalXP by GameType", x = "GameType", y = "TotalXP")
 
 
-ggplot(df, aes(x = GameType, y = mean_totalxp)) +
-  geom_boxplot(width = 5)+
-  geom_col() +
-  labs(title = "Distribution of TotalXP by GameType", x = "GameType", y = "TotalXP") +
-  theme_minimal()
-
-
 ggplot(df, aes(x = GameType, y = mean_score)) +
   geom_boxplot(width = 5)+
   geom_col() +
-  labs(title = "Distribution of Score by GameType", x = "Mean Score", y = "TotalXP") +
+  labs(title = "Distribution of Score by GameType", x = "GameType", y = "TotalXP") +
   theme_minimal()
   
 ```
 
 
 
-*Analysis* 
+**Analysis:** 
 
-Looking at first scatterplot we can observe a pretty obvious positive correlation between Score and TotalXP. This correlation is shared by all the GameTypes. Looking closer at the best fit lines we can see which GameType has the better correlation. To get a more exact correlation value take a look at the summary statistics which will tell you that Domination has the best correlation between Score and TotalXP. The best to worst correlation order goes from Domination, Kill Confirmed, Hardpoint, and TDM. 
+
+
+Looking at first scatterplot we can observe a pretty obvious positive correlation between Score and TotalXP. This correlation is shared by all the GameTypes. Looking closer at the best fit lines we can see which GameType has the better correlation. To get a more exact correlation value take a look at the summary statistics which will tell you that Domination has the best correlation between Score and TotalXP at 0.72. The best to worst correlation order goes from Domination, Kill Confirmed, Hardpoint, to TDM. Looking at the box plot tells us that Kill Confirmed on average has a lower TotalXP compared to the other game types. When we switch to the Mean Score plot we see more of the same, Kill Confirmed is the only game type with a mean score of less than 3000.  
+
 
 
 
@@ -382,7 +378,7 @@ summary(model)
 
 
 
-
+**Discussion:** 
 
 
 ## Task 4: Prediction
