@@ -38,7 +38,7 @@ COD_combined <- bind_rows(CODGames_p1_380, CODGames_p2_380)
 
 ```
 
-## Task 1: Data Cleaning and Data Visualization – Complete without Generative AI (Thaddeus + Sammit-ish)
+## Task 1: Data Cleaning and Data Visualization
 
 > *Relevant Information:* (Complete without using Generative AI) Prior to each online match, players in the game lobby are presented with two options for the battlefield of the upcoming game (`Map1` and `Map2`). The players have the option to vote and the resulting vote is recorded in the `MapVote` column. The winning map is listed in the `Choice` column. In the event of a tie vote, the map listed in `Map1` is chosen. (Games for which the player entered the lobby after the vote has taken place have no information in `Map1` and `Map2` but have the winning map presented in `Choice`.)
 
@@ -162,7 +162,7 @@ ggplot(Map_stats, aes(x = reorder(Map, win_rate), y = win_rate)) +
 
 
 
-## Task 2: Data Cleaning and Data Visualization – Complete using Generative AI (Sammit + Thaddeus-ish)
+## Task 2: Data Cleaning and Data Visualization
 
 **Question:** Repeat Task 1 using a generative AI of your choice.
 
@@ -286,7 +286,7 @@ ggplot(map_stats, aes(x = reorder(MapCandidate, win_rate), y = win_rate)) +
 ```
 
 
-## Task 3: Inference (Sammit)
+## Task 3: Inference
 
 *Relevant Information:* There are a variety games types (GameType variable) within this dataset.
 
@@ -352,7 +352,7 @@ summary(model)
 
 
 
-## Task 4: Prediction (Jason)
+## Task 4: Prediction
 
 > Relevant Information: In this task, your goal is to compare a variety of classification methods. In particular, you should write your own research question that can be answered by comparing the effectiveness of various classification methodologies. To demonstrate your understanding of these methods, you should implement two classification methods from class, one of which must be random forest, and a third method that we will not cover in class. (The purpose of the using a method we did not cover is I want you to practice learning about a method and its implementation on your own. Basically, find a tutorial that explains the method and how to implement it.) You will then have to compare the results and decide which method was the most effective.
 
