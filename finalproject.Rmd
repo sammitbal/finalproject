@@ -309,6 +309,20 @@ ggplot(map_stats, aes(x = reorder(MapCandidate, win_rate), y = win_rate)) +
 ```
 
 
+
+
+
+
+
+When comparing both soliutions, there are a few noticeable differences. The first one being the table and visualization of the solution from ChatGPT is easier to read and understand. The table clearly states the map name, how many times it was a candidate, and how many times it was selected. Along with providing the winning rate that the map was chosen. It also implemented a coluimn for the amount of draws each map had. Our solution did not include a table that clearly showed the proportions to each map. Instead the visualization sort of combined it. With each map, there is the number of times it was selected, along with the win rate. Although, the win rate is not given as a specific percentage like in the ChatGPT solution. The visualization from the ChatGPT solution is much more effective and easier to interpret, the table gives a clear representation of how many times each map was selected and their win rate. With that, I believe ChatGPT provided a more comprehensive answer that was easy to understand and aesthetically pleasing. 
+
+
+
+
+
+
+
+
 ## Task 3: Inference
 
 *Relevant Information:* There are a variety games types (GameType variable) within this dataset.
