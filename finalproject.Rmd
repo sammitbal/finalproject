@@ -134,7 +134,7 @@ wins <- Map_select %>%
   count(Choice_clean, name = "wins") %>%
   rename(Map = Choice_clean)
 
-# Join and calculate win rate
+#calculate win rate
 Map_stats <- appearances %>%
   left_join(wins, by = "Map") %>%
   mutate(win_rate = wins / appearances) %>%
