@@ -8,7 +8,7 @@ output: html_document
 ```{=html}
 <style>
 blockquote {
-  font-size: 1em;
+font-size: 1em;
 }
 </style>
 ```
@@ -59,9 +59,19 @@ COD_combined <- bind_rows(CODGames_p1_380, CODGames_p2_380)
 -   **Warning:** To full receive full credit, you must write code to solve these issues rather than editing the `.csv` files
 
 
+
+**Discussion:**
+
+
+
+I plan to answer the research question by first addressing the data quality issues and the misspellings. I will do this by creating a word bank of all the misspellings and then run the data through the word bank to make sure every map is spelled correctly. Also to get rid of the blank spaces I will just not include rows with a blank in place. Then to do the calculations I will start by counting how many times each map was candidate by looking at the Map1 and Map2 columns. Then I will count the amount of times the map was selected, call these "wins". Finally I will divide the wins by the appearances to get a win rate. This win rate will than be plotted to show us which maps had the highest and lowest win rates. 
+
+
+
+
 ```{r}
 COD_combined <- 
-COD_combined[COD_combined$Map1 != "", ]
+  COD_combined[COD_combined$Map1 != "", ]
 
 Map_select <- COD_combined %>%
   select(Map1, Map2, Choice)
@@ -76,7 +86,7 @@ Map_select$Choice_clean <- tolower(Map_select$Choice)
 corrections <- c(
   "aPocalypse" = "Apocalypse",
   "apocolypse" = "Apocalypse",
-   "Apocolypse" = "Apocalypse",
+  "Apocolypse" = "Apocalypse",
   "collaterel strike" = "Collateral Strike",
   "apocalypse" = "Apocalypse",
   "deisel" = "Diesel",
@@ -161,6 +171,17 @@ ggplot(Map_stats, aes(x = reorder(Map, win_rate), y = win_rate)) +
 
 
 
+
+**Discussion:**
+
+
+
+Looking at the plot we can see Win Rate on the x-axis and Map on the y-axis. We can also see next to each bar how many times the map won when offered to the players. The top three win rates are for Nuketown 84', Crossroads Strike, and Raid. I left out Nuketown Halloween because it was only offered and chosen once and it is technically a repeat of Nuketown 84'. So to answer the question Nuketown 84', Crossroads Strike, and Raid are the maps most likely to win the map vote when they are an option.
+
+
+
+
+
 ## Task 2: Data Cleaning and Data Visualization
 
 **Question:** Repeat Task 1 using a generative AI of your choice.
@@ -180,27 +201,14 @@ ggplot(Map_stats, aes(x = reorder(Map, win_rate), y = win_rate)) +
 > -   Demonstrate that you have given the comparison considerable thought by making at least 3 substantial points as part of your comparison. - Each point should take the form of a well-written paragraph.
 
 
+To answer the question "Which maps are the most likely to win the map vote when they are an option?" using generative AI we broke the question into a few parts. The first part dealt with the data quality issues. 
 
-Gen AI comparison to my work(fixing spelling mistakes): 
-
-Using Gemini 2.0 I asked: How would you fix misspellings in data in R?
-
-Output I was given: 
-
-```{r, eval=FALSE}
-
-df <- df %>%
-  mutate(
-    city_corrected = case_when(
-      city == "New Yrok" ~ "New York",
-      city == "Los Angelas" ~ "Los Angeles",
-      TRUE ~ city 
-    )
-  )
-```
 
 
 To deal with the misspelled words in the dataset I asked ChatGPT:"i need to remove misspelled rows from the dataset."
+
+
+
 
 This was the code provided. 
 ```{r}
@@ -210,16 +218,16 @@ valid_maps <- c("Deprogram", "Collateral Strike", "Collateral", "Amerika", "Cros
 
 
 
-Using chatGPT I asked: "Prior to each online match, players in the game lobby are presented with two options for the battlefield of the upcoming game (Map1 and Map2). The players have the option to vote and the resulting vote is recorded in the MapVote column. The winning map is listed in the Choice column. In the event of a tie vote, the map listed in Map1 is chosen. (Games for which the player entered the lobby after the vote has taken place have no information in Map1 and Map2 but have the winning map presented in Choice.)Which maps are the most likely to win the map vote when they are an option?As part of your solution, you should calculate the proportion/probability that a map wins the vote given that it was a candidate.
+Then using chatGPT I asked: "Prior to each online match, players in the game lobby are presented with two options for the battlefield of the upcoming game (Map1 and Map2). The players have the option to vote and the resulting vote is recorded in the MapVote column. The winning map is listed in the Choice column. In the event of a tie vote, the map listed in Map1 is chosen. (Games for which the player entered the lobby after the vote has taken place have no information in Map1 and Map2 but have the winning map presented in Choice.)Which maps are the most likely to win the map vote when they are an option?As part of your solution, you should calculate the proportion/probability that a map wins the vote given that it was a candidate.
 
 *Note:* To do this, you will have to calculate the number times that each map was listed as a candidate (Map1 or Map2) and earned more votes than the other candidate.
 
 -   As part of this, you should consider whether a given map won the vote by getting more votes than the other option or if it was selected since it was Map1 and the vote was a tie.
 -   You should also include a visualization of the results.
--   There might be some data quality issues (such as misspelled map names and extra (trailing) blanks in some entries) to solve for this problem." Which gave me this code and visualization. 
+-   There might be some data quality issues (such as misspelled map names and extra (trailing) blanks in some entries) to solve for this problem." Which gave me this code and visualization. ". 
 
 
-
+Here is the code provided:
 
 
 ```{r, eval=FALSE}
@@ -234,7 +242,7 @@ data_clean <- COD_combined %>%
 data_clean <- data_clean %>%
   mutate(
     is_draw = str_detect(MapVote, "^\\s*\\d+\\s*to\\s*\\d+\\s*$") &
-              as.numeric(str_extract(MapVote, "^\\s*\\d+")) == as.numeric(str_extract(MapVote, "\\d+\\s*$"))
+      as.numeric(str_extract(MapVote, "^\\s*\\d+")) == as.numeric(str_extract(MapVote, "\\d+\\s*$"))
   )
 
 # Step 2: Create a column for which map actually won by vote (excluding ties)
@@ -265,7 +273,7 @@ map_stats <- long_data %>%
   ) %>%
   arrange(desc(win_rate))
 
-  
+
 
 draws_per_map <- vote_results %>%
   filter(is_draw) %>%
@@ -284,12 +292,6 @@ map_stats <- map_stats %>%
 print(map_stats)
 
 ```
-
-
-
-
-
-
 
 
 
@@ -313,7 +315,7 @@ ggplot(map_stats, aes(x = reorder(MapCandidate, win_rate), y = win_rate)) +
 
 
 
-When comparing both soliutions, there are a few noticeable differences. The first one being the table and visualization of the solution from ChatGPT is easier to read and understand. The table clearly states the map name, how many times it was a candidate, and how many times it was selected. Along with providing the winning rate that the map was chosen. It also implemented a coluimn for the amount of draws each map had. Our solution did not include a table that clearly showed the proportions to each map. Instead the visualization sort of combined it. With each map, there is the number of times it was selected, along with the win rate. Although, the win rate is not given as a specific percentage like in the ChatGPT solution. The visualization from the ChatGPT solution is much more effective and easier to interpret, the table gives a clear representation of how many times each map was selected and their win rate. With that, I believe ChatGPT provided a more comprehensive answer that was easy to understand and aesthetically pleasing. 
+When comparing both solutions, there are a few noticeable differences. The first one being the table and visualization of the solution from ChatGPT is easier to read and understand. The table clearly states the map name, how many times it was a candidate, and how many times it was selected. Along with providing the winning rate that the map was chosen. It also implemented a column for the amount of draws each map had. Our solution did not include a table that clearly showed the proportions to each map. Instead the visualization sort of combined it. With each map, there is the number of times it was selected, along with the win rate. Although, the win rate is not given as a specific percentage like in the ChatGPT solution. The visualization from the ChatGPT solution is much more effective and easier to interpret, the table gives a clear representation of how many times each map was selected and their win rate. With that, I believe ChatGPT provided a more comprehensive answer that was easy to understand and aesthetically pleasing. 
 
 
 
@@ -370,26 +372,26 @@ df
 
 
 ```{r}
-
+#scatterplot with trend lines
 ggplot(df_cleaned, aes(x = Score, y = TotalXP, color = GameType)) +
   geom_point(alpha = 0.5) +
   geom_smooth(method = "lm", se = FALSE) +
   theme_minimal() +
   labs(title = "Score vs. TotalXP by GameType", x = "Score", y = "TotalXP")
 
-
+#boxplot 
 ggplot(df_cleaned, aes(x = GameType, y = TotalXP)) +
   geom_boxplot() +
   theme_minimal() +
   labs(title = "Distribution of TotalXP by GameType", x = "GameType", y = "TotalXP")
 
-
+#histogram
 ggplot(df, aes(x = GameType, y = mean_score)) +
   geom_boxplot(width = 5)+
   geom_col() +
   labs(title = "Distribution of Score by GameType", x = "GameType", y = "TotalXP") +
   theme_minimal()
-  
+
 ```
 
 
@@ -406,7 +408,7 @@ Looking at first scatterplot we can observe a pretty obvious positive correlatio
 ```{r}
 
 #How does the game type affect TotalXP after accounting for the Score?
-  
+
 model <- lm(TotalXP ~ GameType + Score, data = df_cleaned)
 summary(model)
 
@@ -419,7 +421,7 @@ summary(model)
 
 
 
-After accounting for the Score, the multiple linear regression model indicates varying effects of game type on TotalXP relative to Domination. Playing Hardpoint shows a positive trend, with an estimated increase of 121.76 TotalXP compared to Domination. Conversely, playing Kill Confirmed suggests a  significant negative impact, with an estimated decrease of about 3703.17 TotalXP compared to Domination. Similarly, playing TDM indicates a negative trend, with roughly 2570.44 less TotalXP compared to Domination. This indicates that while Score is a strong predictor of TotalXP, different game types can affect TotalXP differently. Examining for statistical significance tells us that Hardpoint and TDM are not statistically significant at the 0.05 level. Kill Confirmed with a p = 0.0632, however, shows some evidence of leading to lower TotalXP after considering a player's Score. This is backed up by our earlier plots and summary statistics. Overall, GameType affects TotalXP in many different ways, Kill Confirmed leading to a generally lower TotalXP is just the most significant example.  
+After accounting for the Score, the multiple linear regression model indicates varying effects of game type on TotalXP relative to Domination. Playing Hardpoint shows a positive trend, with an estimated increase of 121.76 TotalXP compared to Domination. Conversely, playing Kill Confirmed suggests a  significant negative impact, with an estimated decrease of about 3703.17 TotalXP compared to Domination. Similarly, playing TDM indicates a negative trend, with roughly 2570.44 less TotalXP compared to Domination. This indicates that while Score is a strong predictor of TotalXP, different game types can affect TotalXP differently. Examining for statistical significance tells us that Hardpoint and TDM are not statistically significant at the 0.05 level. Kill Confirmed with a p = 0.0632 (not < 0.05 but closest to it), however, shows some evidence of leading to lower TotalXP after considering a player's Score. This is backed up by our earlier plots and summary statistics. Overall, GameType affects TotalXP in many different ways, Kill Confirmed leading to a generally lower TotalXP is just the most significant example we have.  
 
 
 
