@@ -137,8 +137,7 @@ Wins <- Map_select %>%
 # Join and calculate win rate
 Map_stats <- appearances %>%
   left_join(wins, by = "Map") %>%
-  mutate(wins = replace_na(wins, 0),
-         win_rate = wins / appearances) %>%
+  mutate(win_rate = wins / appearances) %>%
   arrange(desc(win_rate))
 
 ```
@@ -146,13 +145,13 @@ Map_stats <- appearances %>%
 
 ```{r}
 ggplot(Map_stats, aes(x = reorder(Map, win_rate), y = win_rate)) +
-  geom_col(fill = "lightblue") +
+  geom_col() +
   geom_text(aes(label = paste0("n=", appearances)), 
             hjust = -0.5, 
             size = 3.75) +
   coord_flip() +
   labs(
-    title = "Map Win Rate When Offered",
+    title = "Map Win Rate",
     x = "Map",
     y = "Win Rate (Proportion of Times Map Won When Offered)"
   ) +
