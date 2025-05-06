@@ -146,17 +146,16 @@ Map_stats <- appearances %>%
 ```{r}
 ggplot(Map_stats, aes(x = reorder(Map, win_rate), y = win_rate)) +
   geom_col() +
-  geom_text(aes(label = paste0("n=", appearances)), 
-            hjust = -0.5, 
+  geom_text(aes(label = paste0("n=", wins)), 
+            hjust = -0.1, 
             size = 3.75) +
   coord_flip() +
   labs(
     title = "Map Win Rate",
     x = "Map",
-    y = "Win Rate (Proportion of Times Map Won When Offered)"
+    y = "Win Rate (n = Number of Times Map Won When Offered)"
   ) +
-  theme_minimal() +
-  scale_y_continuous(limits = c(0, 1.1)) 
+  theme_minimal()
 
 ```
 
