@@ -395,8 +395,9 @@ library(rattle) # for the fancyRpartPlot()</code></pre>
 ## ✖ tidyr::pack()   masks Matrix::pack()
 ## ✖ tidyr::unpack() masks Matrix::unpack()
 ## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(readxl)
-library(stringr)
+<pre class="r"><code>library(readxl)</code></pre>
+<pre><code>## Warning: package &#39;readxl&#39; was built under R version 4.4.2</code></pre>
+<pre class="r"><code>library(stringr)
 
 CODMaps &lt;- read.csv(&quot;./CODMaps.csv&quot;)
 CODGames_p2_380 &lt;- read.csv(&quot;./CODGames_p2_380.csv&quot;)
@@ -614,25 +615,35 @@ names and extra (trailing) blanks in some entries) to solve for this
 problem.” Which gave me this code and visualization.</li>
 </ul>
 <pre class="r"><code># Step 1: Clean up map names (remove trailing/leading spaces, convert to lowercase if needed)
-data_clean &lt;-COD_combined %&gt;%
+data_clean &lt;- COD_combined %&gt;%
   mutate(across(c(Map1, Map2, Choice), ~str_trim(.)))
+
+
+
+
+data_clean &lt;- data_clean %&gt;%
+  mutate(
+    is_draw = str_detect(MapVote, &quot;^\\s*\\d+\\s*to\\s*\\d+\\s*$&quot;) &amp;
+              as.numeric(str_extract(MapVote, &quot;^\\s*\\d+&quot;)) == as.numeric(str_extract(MapVote, &quot;\\d+\\s*$&quot;))
+  )
 
 # Step 2: Create a column for which map actually won by vote (excluding ties)
 vote_results &lt;- data_clean %&gt;%
   filter(!is.na(Map1) &amp; !is.na(Map2) &amp; !is.na(MapVote)) %&gt;%
   mutate(
     vote_winner = case_when(
-      MapVote &gt; 0 ~ Map2,
-      MapVote &lt; 0 ~ Map1,
-      MapVote == 0 ~ Map1  # Map1 wins ties
+      is_draw ~ Map1,
+      TRUE ~ Choice
     )
   )
+
 
 # Step 3: Reshape into long format to count wins and appearances
 long_data &lt;- vote_results %&gt;%
   pivot_longer(cols = c(Map1, Map2), names_to = &quot;MapSlot&quot;, values_to = &quot;MapCandidate&quot;) %&gt;%
   mutate(win = MapCandidate == vote_winner) %&gt;%
-    filter(MapCandidate %in% valid_maps)
+  filter(MapCandidate %in% valid_maps)
+
 
 # Step 4: Count how many times each map was offered and how many times it won
 map_stats &lt;- long_data %&gt;%
@@ -642,8 +653,21 @@ map_stats &lt;- long_data %&gt;%
     times_won = sum(win),
     win_rate = times_won / times_offered
   ) %&gt;%
-  arrange(desc(win_rate)) %&gt;%
+  arrange(desc(win_rate))
+
   
+
+draws_per_map &lt;- vote_results %&gt;%
+  filter(is_draw) %&gt;%
+  pivot_longer(cols = c(Map1, Map2), names_to = &quot;MapSlot&quot;, values_to = &quot;MapCandidate&quot;) %&gt;%
+  group_by(MapCandidate) %&gt;%
+  summarise(draws = n(), .groups = &quot;drop&quot;)
+
+
+
+map_stats &lt;- map_stats %&gt;%
+  left_join(draws_per_map, by = &quot;MapCandidate&quot;) %&gt;%
+  mutate(draws = replace_na(draws, 0))  # Fill NA with 0 for maps with no draws
 
 
 
@@ -829,6 +853,52 @@ one way to find techniques is by looking at the textbook that we have
 been covering: An Introduction to Statistical Learning with Applications
 in R by Gareth James et al. You can find a pdf of the textbook on the
 author’s site: <a href="https://www.statlearning.com/" class="uri">https://www.statlearning.com/</a>.</p>
+<div id="deciding-the-research-question" class="section level4">
+<h4>Deciding the Research Question</h4>
+<p><strong>Question:</strong> Decide which game mode was played based
+off of the Map Choice, the Eliminations, Score, and the Time in Minutes
+and Seconds.</p>
+<pre class="r"><code># DF with no time NA
+COD_comb_w_t &lt;- COD_combined %&gt;%
+  filter(!is.na(Time_Sec) &amp; !is.na(Time_Min))
+
+## Check num. of NA in Choice, Eliminations, Score, Damage, Deaths
+sum(is.na(COD_comb_w_t$Choice)) </code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>sum(is.na(COD_comb_w_t$Eliminations))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>sum(is.na(COD_comb_w_t$Score))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>sum(is.na(COD_comb_w_t$Damage))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>sum(is.na(COD_comb_w_t$Deaths))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>COD_comb_w_t &lt;- COD_comb_w_t %&gt;%
+  select(c(Time_Sec, Time_Min, Choice, Eliminations, Score, Damage, Deaths))
+
+nrow(COD_comb_w_t) ## How many rows? Enough to do data analysis?</code></pre>
+<pre><code>## [1] 253</code></pre>
+<pre class="r"><code>head(COD_comb_w_t)</code></pre>
+<pre><code>##   Time_Sec Time_Min            Choice Eliminations Score Damage Deaths
+## 1       45        1      Miami Strike           14  2025    392     34
+## 2        5        2               Zoo           13  2045    359     42
+## 3       22        2      Nuketown &#39;84            7  1550    192     17
+## 4        0        2 Crossroads Strike           10  1760    224     15
+## 5        9        2             Slums           19  3260    502     26
+## 6       58        1 Collateral Strike            7  1240    195     18</code></pre>
+<p>The research question was decided based off of a filtered and
+combined dataset, “COD Combined with Time”, or <code>Cod_comb_w_t</code>
+in the code. The reason why it is so important as to filter out numerous
+rows just to look at the time in Minutes and Seconds is because three
+out of four modes are based on a distinct time limit, and so it’s a key
+variable in deciding which game mode is being played.</p>
+<p>Data wrangling also included checking the number of <code>NA</code>s
+in the dataset (to filter them out upon detection), and checking the
+remaining amount of match data (253), which is more than sufficient for
+predicting the four possible response levels for
+<code>CODGameModes</code> (“Domination”, “Kill Confirmed”, “Hardpoint”,
+or “TDM”).</p>
+</div>
 </div>
 
 

@@ -420,3 +420,32 @@ summary(model)
 *NOTE1:* You will make your life easier if you pick a response with a small number of levels.
 
 *NOTE2:* As you are picking a method that we did not cover, one way to find techniques is by looking at the textbook that we have been covering: An Introduction to Statistical Learning with Applications in R by Gareth James et al. You can find a pdf of the textbook on the author’s site: <https://www.statlearning.com/>.
+
+#### Deciding the Research Question
+
+**Question:** Decide which game mode was played based off of the Map Choice, the Eliminations, Score, and the Time in Minutes and Seconds. 
+
+```{r}
+# DF with no time NA
+COD_comb_w_t <- COD_combined %>%
+  filter(!is.na(Time_Sec) & !is.na(Time_Min))
+
+## Check num. of NA in Choice, Eliminations, Score, Damage, Deaths
+sum(is.na(COD_comb_w_t$Choice)) 
+sum(is.na(COD_comb_w_t$Eliminations))
+sum(is.na(COD_comb_w_t$Score))
+sum(is.na(COD_comb_w_t$Damage))
+sum(is.na(COD_comb_w_t$Deaths))
+
+COD_comb_w_t <- COD_comb_w_t %>%
+  select(c(Time_Sec, Time_Min, Choice, Eliminations, Score, Damage, Deaths))
+
+nrow(COD_comb_w_t) ## How many rows? Enough to do data analysis?
+
+head(COD_comb_w_t)
+```
+
+The research question was decided based off of a filtered and combined dataset, "COD Combined with Time", or `Cod_comb_w_t` in the code. The reason why it is so important as to filter out numerous rows just to look at the time in Minutes and Seconds is because three out of four modes are based on a distinct time limit, and so it's a key variable in deciding which game mode is being played. 
+
+Data wrangling also included checking the number of `NA`s in the dataset (to filter them out upon detection), and checking the remaining amount of match data (253), which is more than sufficient for predicting the four possible response levels for `CODGameModes` ("Domination", "Kill Confirmed", "Hardpoint", or "TDM"). 
+
