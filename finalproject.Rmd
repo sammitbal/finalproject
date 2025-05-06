@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Frontmatter
 
 ```{r}
-remove(list = ls())
+#remove(list = ls())
 library(glmnet)
 library(rpart)
 library(rattle) # for the fancyRpartPlot()
@@ -59,18 +59,16 @@ COD_combined <- bind_rows(CODGames_p1_380, CODGames_p2_380)
 -   **Warning:** To full receive full credit, you must write code to solve these issues rather than editing the `.csv` files
 
 
-
 ```{r}
 COD_combined <- 
 COD_combined[COD_combined$Map1 != "", ]
-```
 
-
-```{r}
 Map_select <- COD_combined %>%
   select(Map1, Map2, Choice)
 
-unique(as.character(Map_select$Choice))
+Map_select$Map1_clean <- tolower(Map_select$Map1)
+
+Map_select$Map2_clean <- tolower(Map_select$Map2)
 
 Map_select$Choice_clean <- tolower(Map_select$Choice)
 
@@ -84,48 +82,82 @@ corrections <- c(
   "deisel" = "Diesel",
   "drive-in" = "Drive-In", 
   "yamantau" = "Yamantau", 
-  "Miami Stirke" = "Miami Strike"
+  "miami stirke" = "Miami Strike",
+  "riad" = "Raid",
+  "ruah" = "Raid",
+  "raid " = "Raid",
+  "amrada strike" = "Armada Strike",
+  "deprogam" = "Deprogram",
+  "miami Sstrike" = "Miami Strike",
+  "miami Stirke" = "Miami Strike",
+  "rush " = "Rush",
+  "zoo " = "Zoo",
+  "miami sstrike" = "Miami Strike",
+  "collateral striek" = "Collateral Strike",
+  "collaterol strike" = "Collateral Strike",
+  "jungle " = "Jungle",
+  "miami " = "Miami"
 )
 
 #comparing choices to misspelled words then correcting them if misspelled.
+Map_select$Map1_clean <- ifelse(
+  Map_select$Map1_clean %in% names(corrections),
+  corrections[Map_select$Map1_clean],
+  Map_select$Map1  
+)
+
+Map_select$Map2_clean <- ifelse(
+  Map_select$Map2_clean %in% names(corrections),
+  corrections[Map_select$Map2_clean],
+  Map_select$Map2  
+)
+
 Map_select$Choice_clean <- ifelse(
   Map_select$Choice_clean %in% names(corrections),
   corrections[Map_select$Choice_clean],
   Map_select$Choice  
 )
 
-unique(as.character(Map_select$Choice_clean))
-
-```
-
-
-
-```{r}
-Map_select <-
-  Map_select %>%
-  filter(Map1 != "Collateral Striek", Map1 != "Collaterol Strike", Map1 != "Deprogam", Map1 != "Miami Stirke", Map1 != "Riad", Map1 != "Collateral Striek", Map1 != "Ruah", Map1 != "Drive-in")
-```
-
-
-
-```{r}
-table(Map_select$Map1)
 ```
 
 
 ```{r}
-Map_select <-
-  Map_select %>%
-  filter(Map2 != "Miami Sstrike", Map2 != "Miami Stirke", Map2 != "yamantau", Map2 != "Amrada Strike", Map2 != "Drive-in")
+# Count appearances
+Appearances <- Map_select %>%
+  select(Map1_clean, Map2_clean) %>%
+  pivot_longer(cols = everything(), values_to = "Map") %>%
+  count(Map, name = "appearances")
+
+# Count wins
+Wins <- Map_select %>%
+  filter(Choice_clean == Map1_clean | Choice_clean == Map2_clean) %>%
+  count(Choice_clean, name = "wins") %>%
+  rename(Map = Choice_clean)
+
+# Join and calculate win rate
+Map_stats <- appearances %>%
+  left_join(wins, by = "Map") %>%
+  mutate(wins = replace_na(wins, 0),
+         win_rate = wins / appearances) %>%
+  arrange(desc(win_rate))
+
 ```
 
-```{r}
-table(Map_select$Map2)
-```
-
-
 
 ```{r}
+ggplot(Map_stats, aes(x = reorder(Map, win_rate), y = win_rate)) +
+  geom_col(fill = "lightblue") +
+  geom_text(aes(label = paste0("n=", appearances)), 
+            hjust = -0.5, 
+            size = 3.75) +
+  coord_flip() +
+  labs(
+    title = "Map Win Rate When Offered",
+    x = "Map",
+    y = "Win Rate (Proportion of Times Map Won When Offered)"
+  ) +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, 1.1)) 
 
 ```
 
