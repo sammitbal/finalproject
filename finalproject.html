@@ -395,8 +395,9 @@ library(rattle) # for the fancyRpartPlot()</code></pre>
 ## ✖ tidyr::pack()   masks Matrix::pack()
 ## ✖ tidyr::unpack() masks Matrix::unpack()
 ## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(readxl)
-library(stringr)
+<pre class="r"><code>library(readxl)</code></pre>
+<pre><code>## Warning: package &#39;readxl&#39; was built under R version 4.4.2</code></pre>
+<pre class="r"><code>library(stringr)
 
 CODMaps &lt;- read.csv(&quot;./CODMaps.csv&quot;)
 CODGames_p2_380 &lt;- read.csv(&quot;./CODGames_p2_380.csv&quot;)
@@ -868,6 +869,52 @@ one way to find techniques is by looking at the textbook that we have
 been covering: An Introduction to Statistical Learning with Applications
 in R by Gareth James et al. You can find a pdf of the textbook on the
 author’s site: <a href="https://www.statlearning.com/" class="uri">https://www.statlearning.com/</a>.</p>
+<div id="deciding-the-research-question" class="section level4">
+<h4>Deciding the Research Question</h4>
+<p><strong>Question:</strong> Decide which game mode was played based
+off of the Map Choice, the Eliminations, Score, and the Time in Minutes
+and Seconds.</p>
+<pre class="r"><code># DF with no time NA
+COD_comb_w_t &lt;- COD_combined %&gt;%
+  filter(!is.na(Time_Sec) &amp; !is.na(Time_Min))
+
+## Check num. of NA in Choice, Eliminations, Score, Damage, Deaths
+sum(is.na(COD_comb_w_t$Choice)) </code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>sum(is.na(COD_comb_w_t$Eliminations))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>sum(is.na(COD_comb_w_t$Score))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>sum(is.na(COD_comb_w_t$Damage))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>sum(is.na(COD_comb_w_t$Deaths))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>COD_comb_w_t &lt;- COD_comb_w_t %&gt;%
+  select(c(Time_Sec, Time_Min, Choice, Eliminations, Score, Damage, Deaths))
+
+nrow(COD_comb_w_t) ## How many rows? Enough to do data analysis?</code></pre>
+<pre><code>## [1] 253</code></pre>
+<pre class="r"><code>head(COD_comb_w_t)</code></pre>
+<pre><code>##   Time_Sec Time_Min            Choice Eliminations Score Damage Deaths
+## 1       45        1      Miami Strike           14  2025    392     34
+## 2        5        2               Zoo           13  2045    359     42
+## 3       22        2      Nuketown &#39;84            7  1550    192     17
+## 4        0        2 Crossroads Strike           10  1760    224     15
+## 5        9        2             Slums           19  3260    502     26
+## 6       58        1 Collateral Strike            7  1240    195     18</code></pre>
+<p>The research question was decided based off of a filtered and
+combined dataset, “COD Combined with Time”, or <code>Cod_comb_w_t</code>
+in the code. The reason why it is so important as to filter out numerous
+rows just to look at the time in Minutes and Seconds is because three
+out of four modes are based on a distinct time limit, and so it’s a key
+variable in deciding which game mode is being played.</p>
+<p>Data wrangling also included checking the number of <code>NA</code>s
+in the dataset (to filter them out upon detection), and checking the
+remaining amount of match data (253), which is more than sufficient for
+predicting the four possible response levels for
+<code>CODGameModes</code> (“Domination”, “Kill Confirmed”, “Hardpoint”,
+or “TDM”).</p>
+</div>
 </div>
 
 
