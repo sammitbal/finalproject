@@ -123,13 +123,13 @@ Map_select$Choice_clean <- ifelse(
 
 ```{r}
 # Count appearances
-Appearances <- Map_select %>%
+appearances <- Map_select %>%
   select(Map1_clean, Map2_clean) %>%
   pivot_longer(cols = everything(), values_to = "Map") %>%
   count(Map, name = "appearances")
 
 # Count wins
-Wins <- Map_select %>%
+wins <- Map_select %>%
   filter(Choice_clean == Map1_clean | Choice_clean == Map2_clean) %>%
   count(Choice_clean, name = "wins") %>%
   rename(Map = Choice_clean)
@@ -188,7 +188,7 @@ Using Gemini 2.0 I asked: How would you fix misspellings in data in R?
 
 Output I was given: 
 
-```{r}
+```{r, eval=FALSE}
 
 df <- df %>%
   mutate(
@@ -223,7 +223,7 @@ Using chatGPT I asked: "Prior to each online match, players in the game lobby ar
 
 
 
-```{r}
+```{r, eval=FALSE}
 
 # Step 1: Clean up map names (remove trailing/leading spaces, convert to lowercase if needed)
 data_clean <-COD_combined %>%
@@ -272,7 +272,7 @@ print(map_stats)
 
 
 
-```{r}
+```{r, eval=FALSE}
 ggplot(map_stats, aes(x = reorder(MapCandidate, win_rate), y = win_rate)) +
   geom_col(fill = "steelblue") +
   coord_flip() +
@@ -318,25 +318,22 @@ df_cleaned <- COD_combined %>%
 
 ```{r}
 # Summary statistics of Score and TotalXP by GameType
-df_cleaned %>%
+df <- df_cleaned %>%
   group_by(GameType) %>%
   summarize(
     count = n(),
     mean_score = mean(Score, na.rm = TRUE),
-    median_score = median(Score, na.rm = TRUE),
     mean_totalxp = mean(TotalXP, na.rm = TRUE),
-    median_totalxp = median(TotalXP, na.rm = TRUE),
-    sd_totalxp = sd(TotalXP, na.rm = TRUE)
+    sd_totalxp = sd(TotalXP, na.rm = TRUE),
+    correlation = cor(Score, TotalXP, use = "complete.obs")
   )
 
+
+df
 ```
 
 
 ```{r}
-ggplot(df_cleaned, aes(x = GameType, y = TotalXP)) +
-  geom_boxplot() +
-  theme_minimal() +
-  labs(title = "Distribution of TotalXP by GameType", x = "GameType", y = "TotalXP")
 
 ggplot(df_cleaned, aes(x = Score, y = TotalXP, color = GameType)) +
   geom_point(alpha = 0.5) +
@@ -345,17 +342,46 @@ ggplot(df_cleaned, aes(x = Score, y = TotalXP, color = GameType)) +
   labs(title = "Score vs. TotalXP by GameType", x = "Score", y = "TotalXP")
 
 
+ggplot(df_cleaned, aes(x = GameType, y = TotalXP)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Distribution of TotalXP by GameType", x = "GameType", y = "TotalXP")
+
+
+ggplot(df, aes(x = GameType, y = mean_totalxp)) +
+  geom_boxplot(width = 5)+
+  geom_col() +
+  labs(title = "Distribution of TotalXP by GameType", x = "GameType", y = "TotalXP") +
+  theme_minimal()
+
+
+ggplot(df, aes(x = GameType, y = mean_score)) +
+  geom_boxplot(width = 5)+
+  geom_col() +
+  labs(title = "Distribution of Score by GameType", x = "Mean Score", y = "TotalXP") +
+  theme_minimal()
+  
 ```
+
+
+
+*Analysis* 
+
+Looking at first scatterplot we can observe a pretty obvious positive correlation between Score and TotalXP. This correlation is shared by all the GameTypes. Looking closer at the best fit lines we can see which GameType has the better correlation. To get a more exact correlation value take a look at the summary statistics which will tell you that Domination has the best correlation between Score and TotalXP. The best to worst correlation order goes from Domination, Kill Confirmed, Hardpoint, and TDM. 
+
 
 
 ```{r}
 
 #How does the game type affect TotalXP after accounting for the Score?
   
-model <- lm(TotalXP ~ Score + GameType, data = df_cleaned)
+model <- lm(TotalXP ~ GameType + Score, data = df_cleaned)
 summary(model)
 
 ```
+
+
+
 
 
 
