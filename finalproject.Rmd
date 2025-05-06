@@ -401,7 +401,14 @@ summary(model)
 
 
 
+
 **Discussion:** 
+
+
+
+After accounting for the Score, the multiple linear regression model indicates varying effects of game type on TotalXP relative to Domination. Playing Hardpoint shows a positive trend, with an estimated increase of 121.76 TotalXP compared to Domination. Conversely, playing Kill Confirmed suggests a  significant negative impact, with an estimated decrease of about 3703.17 TotalXP compared to Domination. Similarly, playing TDM indicates a negative trend, with roughly 2570.44 less TotalXP compared to Domination. This indicates that while Score is a strong predictor of TotalXP, different game types can affect TotalXP differently. Examining for statistical significance tells us that Hardpoint and TDM are not statistically significant at the 0.05 level. Kill Confirmed with a p = 0.0632, however, shows some evidence of leading to lower TotalXP after considering a player's Score. This is backed up by our earlier plots and summary statistics. Overall, GameType affects TotalXP in many different ways, Kill Confirmed leading to a generally lower TotalXP is just the most significant example.  
+
+
 
 
 ## Task 4: Prediction
