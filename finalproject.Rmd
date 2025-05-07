@@ -600,6 +600,7 @@ The model seems to do even worse in this arbitrary 2nd try. So it's not worth gu
 #### Conclusion
 
 **Best Model:**
+
 Overall, the effectiveness of the Support Vector Machine (SVM) method in comparison to the Random Forest Method was found lacking: SVM's overall accuracy was lower than that of RF in both iterations (76.54\% and 74.9\% were both less than 79.84\%), while both models seemed roughly-equally-unable to predict the exceptional `Domination` or `Kill Confirmed` game mode when it did occur. 
 
 Therefore, the best model in this data set for predicting the Game Mode given the predictors Eliminations, Score, Damage, and Total XP is **Random Forest**. 
@@ -616,8 +617,7 @@ Let's next take a look at the significance of variables at arriving at these con
 rfModel$importance
 ```
 
-Given that a larger value suggests greater importance, it seems all four variables are roughly equally important at arriving at a conclusion, based on the variable importances above. Score seems a little more significant than the others at this, with roughly a 15\% larger value. 
-
+Given that a larger value suggests greater importance, it seems all four variables are roughly equally important at arriving at a conclusion, based on the variable importance above. Score seems a little more significant than the others at this, with roughly a 15\% larger value.  
 
 
 
