@@ -29,6 +29,7 @@ library(readxl)
 library(stringr)
 library(e1071)
 library(caret)
+library(randomForest)
 
 CODMaps <- read.csv("./CODMaps.csv")
 CODGames_p2_380 <- read.csv("./CODGames_p2_380.csv")
@@ -494,7 +495,7 @@ One important correction in the process is rectifying the difference in notation
 ## Training/Validaiton Split
 set.seed(380)
 trainInd <- sample(1:nrow(COD_gm), 
-				    floor(0.6 * nrow(COD_gm)))
+				    floor(0.7 * nrow(COD_gm)))
 set.seed(NULL)
 
 Train <- COD_gm[trainInd, ]
@@ -513,12 +514,10 @@ The utility of this in our case is because we want an answer that applies not to
 **Examining the Levels:** 
 One of the greater concerns regarding this 60/40 Training/Validation split is the lack of data on `Domination` or `Kill Confirmed`, as both players played a disproportionate amount of the other two modes and not that much of either of the three. Therefore, our accuracy figures across both models may not predict `Domination` or `Kill Confirmed` data that accurately. 
 
-Nonetheless, the ability of both models to predict which of the four modes is being played is still possible to answer with the data, albeit with that uncertaincy meaning the results might have greater variance. 
-
-
 #### Random Forest
 
 ```{r}
+# RF Model
 set.seed(123)
 rfModel <- randomForest(as.factor(GameType) ~ .,
           					    data = Train,
@@ -536,3 +535,92 @@ predGameType <- predict(rfModel,
 # Create the confusion matrix
 confusionMatrix(predGameType, as.factor(Validation$GameType))
 ```
+Looking at the results of the predictions from Random Forest, it seems the model succeeded once out of 5 times at predicting either `Domination` or `Kill Confirmed` when it was (20\% precision), meaning that it's most likely that the model only has significant power for `Hardpoint` and `TDM`. However, in that realm the model has 79.84\% accuracy predicting overall.  
+
+#### Support Vector Machines
+
+**Context:** 
+
+Support Vector Machines are useful for exactly this scenario: one of the apparent weaknesses of the previous `Random Forest` method was that, due to the lack of data on `Domination` and `Kill Confirmed`, the method got a 0\% accuracy when it came time to classify both. However, SVM are notable in that they are especially capable under these constraints, because...
+
+**Description:** 
+
+A SVM is fundamentally trying to decide at what "boundary" values of each variable--- for example, at what amount of `Elimination`--- does the prediction change from predicting one thing (e.g., Game Mode = `Hardpoint`) to another (e.g., Game Mode = `TDM`). This boundary is chosen by creating the best boundary (hyperplane, technically) to use to decide "if it's to the left of $Z$ boundary, the response is $X$, and if it's to the right, the response is $Y$". 
+
+Where it gets its name is that the boundary is sepcifically chosen "in such a way that it maxes the margin, which is the distance between the boundary and the closest data points from each class" ([GeeksForGeeks](https://www.geeksforgeeks.org/support-vector-machine-in-machine-learning/#)), and said closest points are called **support vectors**. Of course, the boundary must account for outlier data points which lie on the wrong side, and it gets complicated from there, but the gist is that 1.) there's a boundary, and 2.) there's significance in it being to the left or right, as far as predictions go. 
+
+**Code:** 
+
+```{r}
+# SVM model
+set.seed(380)
+svmModel <- svm(as.factor(GameType) ~ ., data = Train)
+set.seed(NULL)
+```
+
+```{r}
+# R selects threshold
+predGameType2 <- predict(svmModel,
+                         newdata = Validation, 
+                         type = "response")
+
+# Create the confusion matrix
+confusionMatrix(predGameType2, as.factor(Validation$GameType))
+```
+
+Here, we can see that this SVM method failed more spectacularly than Random Forest at predicting the rare instances of `Domination` or `Kill Confirmed`. While an alternative explanation than that the model is worse is that this case might be an outlier, and the data might perform better if we shuffle the Training/Validation split again...
+
+```{r}
+# 2nd Training/Validation split
+set.seed(123)
+trainInd <- sample(1:nrow(COD_gm), 
+				    floor(0.7 * nrow(COD_gm)))
+set.seed(NULL)
+
+Train <- COD_gm[trainInd, ]
+Validation <- COD_gm[-trainInd, ]
+
+# SVM model
+set.seed(123)
+svmModel <- svm(as.factor(GameType) ~ ., data = Train)
+set.seed(NULL)
+
+# R selects threshold
+predGameType2 <- predict(svmModel,
+                         newdata = Validation, 
+                         type = "response")
+
+# Create the confusion matrix
+confusionMatrix(predGameType2, as.factor(Validation$GameType))
+```
+
+The model seems to do even worse in this arbitrary 2nd try. So it's not worth guessing that the data was an outlier, especially because the overall accuracy of it is 76.54\% (based off of the first iteration of this test) which is also inferior to the predictive power of the Random Forest method.
+
+
+#### Conclusion
+
+**Best Model:**
+Overall, the effectiveness of the Support Vector Machine (SVM) method in comparison to the Random Forest Method was found lacking: SVM's overall accuracy was lower than that of RF in both iterations (76.54\% and 74.9\% were both less than 79.84\%), while both models seemed roughly-equally-unable to predict the exceptional `Domination` or `Kill Confirmed` game mode when it did occur. 
+
+Therefore, the best model in this data set for predicting the Game Mode given the predictors Eliminations, Score, Damage, and Total XP is **Random Forest**. 
+
+**Predictors:** 
+
+Given our best model, let's then answer the research question: 
+
+> **Question:** Decide which game mode was played based off of the Eliminations, Score, Damage, and Total XP.
+
+Let's next take a look at the significance of variables at arriving at these conclusions: 
+
+```{r}
+rfModel$importance
+```
+
+Given that a larger value suggests greater importance, it seems all four variables are roughly equally important at arriving at a conclusion, based on the variable importances above. Score seems a little more significant than the others at this, with roughly a 15\% larger value. 
+
+
+
+
+
+
+
