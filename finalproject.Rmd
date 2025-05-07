@@ -323,7 +323,7 @@ When comparing both soliutions, there are a few noticeable differences. The firs
 
 When it came to asking and getting ChatGPT to give me the answers I was looking for, I had to be very clear and precise in what I was asking, or it would not give me the correct answer. For exmaple, when I was asking ChatGPT how to add a column for total ties it was giving me code where ties were equal to 0. This is obviously not the case if you look at the MapVote column. So I told ChatGPT exactly how it was, "A tie is 3 to 3" and that's when it gave me the answer I was desiring. That was the only hiccup I dealt with when trying to get ChatGPT to answer the research question. This was my exact question to ChatGPT:"a draw from this dataset would be something like '3 to 3'
 
-And the response ChatGPT gave me was the follwing: 
+And the response ChatGPT gave me was the following: 
 
 'Thanks — that changes everything. If draws are recorded as strings like "3 to 3" in the MapVote column, then your current logic using MapVote == 0 will never detect ties.'
 
