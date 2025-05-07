@@ -395,12 +395,10 @@ library(rattle) # for the fancyRpartPlot()</code></pre>
 ## ✖ tidyr::pack()   masks Matrix::pack()
 ## ✖ tidyr::unpack() masks Matrix::unpack()
 ## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(readxl)</code></pre>
-<pre><code>## Warning: package &#39;readxl&#39; was built under R version 4.4.2</code></pre>
-<pre class="r"><code>library(stringr)
-library(e1071)</code></pre>
-<pre><code>## Warning: package &#39;e1071&#39; was built under R version 4.4.3</code></pre>
-<pre class="r"><code>library(caret)</code></pre>
+<pre class="r"><code>library(readxl)
+library(stringr)
+library(e1071)
+library(caret)</code></pre>
 <pre><code>## Warning: package &#39;caret&#39; was built under R version 4.4.3</code></pre>
 <pre><code>## Loading required package: lattice
 ## 
@@ -721,7 +719,7 @@ print(map_stats)</code></pre>
     y = &quot;Win Rate&quot;
   ) +
   theme_minimal()</code></pre>
-<p>When comparing both soliutions, there are a few noticeable
+<p>When comparing both solutions, there are a few noticeable
 differences. The first one being the table and visualization of the
 solution from ChatGPT is easier to read and understand. The table
 clearly states the map name, how many times it was a candidate, and how
@@ -1065,41 +1063,41 @@ confusionMatrix(predGameType, as.factor(Validation$GameType))</code></pre>
 ##                 Reference
 ## Prediction       Domination Hardpoint Kill Confirmed TDM
 ##   Domination              0         0              0   0
-##   Hardpoint               0        48              0  10
+##   Hardpoint               0        49              0  10
 ##   Kill Confirmed          0         0              1   0
-##   TDM                     2        36              2 144
+##   TDM                     2        35              2 144
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.7942          
-##                  95% CI : (0.7379, 0.8433)
+##                Accuracy : 0.7984          
+##                  95% CI : (0.7423, 0.8469)
 ##     No Information Rate : 0.6337          
-##     P-Value [Acc &gt; NIR] : 4.473e-08       
+##     P-Value [Acc &gt; NIR] : 1.957e-08       
 ##                                           
-##                   Kappa : 0.5298          
+##                   Kappa : 0.5404          
 ##                                           
 ##  Mcnemar&#39;s Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: Domination Class: Hardpoint Class: Kill Confirmed
-## Sensitivity                    0.00000           0.5714              0.333333
+## Sensitivity                    0.00000           0.5833              0.333333
 ## Specificity                    1.00000           0.9371              1.000000
-## Pos Pred Value                     NaN           0.8276              1.000000
-## Neg Pred Value                 0.99177           0.8054              0.991736
+## Pos Pred Value                     NaN           0.8305              1.000000
+## Neg Pred Value                 0.99177           0.8098              0.991736
 ## Prevalence                     0.00823           0.3457              0.012346
-## Detection Rate                 0.00000           0.1975              0.004115
-## Detection Prevalence           0.00000           0.2387              0.004115
-## Balanced Accuracy              0.50000           0.7543              0.666667
+## Detection Rate                 0.00000           0.2016              0.004115
+## Detection Prevalence           0.00000           0.2428              0.004115
+## Balanced Accuracy              0.50000           0.7602              0.666667
 ##                      Class: TDM
 ## Sensitivity              0.9351
-## Specificity              0.5506
-## Pos Pred Value           0.7826
-## Neg Pred Value           0.8305
+## Specificity              0.5618
+## Pos Pred Value           0.7869
+## Neg Pred Value           0.8333
 ## Prevalence               0.6337
 ## Detection Rate           0.5926
-## Detection Prevalence     0.7572
-## Balanced Accuracy        0.7428</code></pre>
+## Detection Prevalence     0.7531
+## Balanced Accuracy        0.7484</code></pre>
 <p>Looking at the results of the predictions from Random Forest, it
 seems the model succeeded once out of 5 times at predicting either
 <code>Domination</code> or <code>Kill Confirmed</code> when it was (20%
