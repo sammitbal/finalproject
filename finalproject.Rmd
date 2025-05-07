@@ -27,6 +27,8 @@ library(rattle) # for the fancyRpartPlot()
 library(tidyverse)
 library(readxl)
 library(stringr)
+library(e1071)
+library(caret)
 
 CODMaps <- read.csv("./CODMaps.csv")
 CODGames_p2_380 <- read.csv("./CODGames_p2_380.csv")
@@ -452,31 +454,85 @@ After accounting for the Score, the multiple linear regression model indicates v
 
 *NOTE2:* As you are picking a method that we did not cover, one way to find techniques is by looking at the textbook that we have been covering: An Introduction to Statistical Learning with Applications in R by Gareth James et al. You can find a pdf of the textbook on the author’s site: <https://www.statlearning.com/>.
 
+
 #### Deciding the Research Question
 
-**Question:** Decide which game mode was played based off of the Map Choice, the Eliminations, Score, and the Time in Minutes and Seconds. 
+**Question:** Decide which game mode was played based off of the Eliminations, Score, Damage, and Total XP.
 
 ```{r}
-# DF with no time NA
-COD_comb_w_t <- COD_combined %>%
-  filter(!is.na(Time_Sec) & !is.na(Time_Min))
+# DF to predict game mode
+COD_gm <- COD_combined %>%
+  filter(!is.na(Eliminations) & !is.na(Score) &
+         !is.na(Damage) & !is.na(TotalXP)) %>%
+  select(c(GameType, Eliminations, Score, Damage, TotalXP))
 
-## Check num. of NA in Choice, Eliminations, Score, Damage, Deaths
-sum(is.na(COD_comb_w_t$Choice)) 
-sum(is.na(COD_comb_w_t$Eliminations))
-sum(is.na(COD_comb_w_t$Score))
-sum(is.na(COD_comb_w_t$Damage))
-sum(is.na(COD_comb_w_t$Deaths))
+nrow(COD_gm) ## How many rows? Enough to do data analysis?
 
-COD_comb_w_t <- COD_comb_w_t %>%
-  select(c(Time_Sec, Time_Min, Choice, Eliminations, Score, Damage, Deaths))
+# Viewing the dataset
+set.seed(380)
+COD_gm[sample(nrow(COD_gm), 5), ]
+set.seed(NULL)
 
-nrow(COD_comb_w_t) ## How many rows? Enough to do data analysis?
+# Fixing the formatting for GameType
+COD_gm <- COD_gm %>%
+  mutate(GameType = ifelse(grepl("Domination", GameType), "Domination",
+                    ifelse(grepl("Kill Confirmed", GameType), "Kill Confirmed",
+                    ifelse(grepl("Hardpoint", GameType), "Hardpoint",
+                    ifelse(grepl("TDM", GameType), "TDM", "Other")))))
 
-head(COD_comb_w_t)
+sum(COD_gm$GameType == "Other") # Checking for errors
 ```
 
-The research question was decided based off of a filtered and combined dataset, "COD Combined with Time", or `Cod_comb_w_t` in the code. The reason why it is so important as to filter out numerous rows just to look at the time in Minutes and Seconds is because three out of four modes are based on a distinct time limit, and so it's a key variable in deciding which game mode is being played. 
+The research question was decided based off of a filtered and combined dataset, "COD Game Mode", or `COD_gm` in the code. Data wrangling included checking the number of `NA`s in the dataset (to filter them out upon detection), and checking the remaining amount of match data (253), which is more than sufficient for predicting the four possible response levels for `CODGameModes` ("Domination", "Kill Confirmed", "Hardpoint", or "TDM"). 
 
-Data wrangling also included checking the number of `NA`s in the dataset (to filter them out upon detection), and checking the remaining amount of match data (253), which is more than sufficient for predicting the four possible response levels for `CODGameModes` ("Domination", "Kill Confirmed", "Hardpoint", or "TDM"). 
+One important correction in the process is rectifying the difference in notation for `GameMode`--- Player1 seems to have "`HC - `" appended to their game modes, which should be converted to the equivalent mode in `CODGameModes`. While there is a difference in the notation, which likely corresponds to a difference in the games themselves, the goal of this activity is to aggregate the statistics across the game mode itself, which includes both variations. 
 
+
+#### Processing the Data & Comparison
+
+```{r}
+## Training/Validaiton Split
+set.seed(380)
+trainInd <- sample(1:nrow(COD_gm), 
+				    floor(0.6 * nrow(COD_gm)))
+set.seed(NULL)
+
+Train <- COD_gm[trainInd, ]
+Validation <- COD_gm[-trainInd, ]
+
+## Examining the levels of data split
+table(Train$GameType)
+table(Validation$GameType)
+```
+
+**Processing the Data:**
+To perform a proper comparison between the two Classification Methods--- Random Forest (the specified method) and through a Support Vector Machine--- it's necessary to perform a Training/Validation split. What this split means is that, for example, if you have a set of data points that you give your machine, it might MEMORIZE the data points, and therefore be really good (the best among the models) at predicting that data, but when it comes time to predict REAL-WORLD DATA that it's not seen before, its predictions might fall way off the mark. The Training/Validation split is useful for both Classification Methods because it approximates "real-world" data by sub-setting a percentage of data that it will use as a simulation of "real-world data", hides it from the model, and only uses the data for testing it in a "real-world situation". 
+
+The utility of this in our case is because we want an answer that applies not to just these two `Player 1` and `Player 2` datasets but to players in general. The Training/Validation split emulates this for both models, and therefore will help get a closer-to-"true" model comparison, so that we can fairly select the "real best model" for answering the question.
+
+**Examining the Levels:** 
+One of the greater concerns regarding this 60/40 Training/Validation split is the lack of data on `Domination` or `Kill Confirmed`, as both players played a disproportionate amount of the other two modes and not that much of either of the three. Therefore, our accuracy figures across both models may not predict `Domination` or `Kill Confirmed` data that accurately. 
+
+Nonetheless, the ability of both models to predict which of the four modes is being played is still possible to answer with the data, albeit with that uncertaincy meaning the results might have greater variance. 
+
+
+#### Random Forest
+
+```{r}
+set.seed(123)
+rfModel <- randomForest(as.factor(GameType) ~ .,
+          					    data = Train,
+          					    ntree = 500,
+          					    mtry = 3) # 3 vars wrt next split
+set.seed(NULL)
+```
+
+```{r}
+# R selects threshold
+predGameType <- predict(rfModel,
+                        newdata = Validation, 
+                        type = "response")
+
+# Create the confusion matrix
+confusionMatrix(predGameType, as.factor(Validation$GameType))
+```
